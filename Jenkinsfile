@@ -1,10 +1,8 @@
-pipeline{
-    agent any 
-    stages{
-        stage('Build'){
-            steps{
-                sh 'echo "Build"'
-            }
-        }
+pipeline {
+  agent any
+  stages {
+    stage('Build') {
+      steps { echo "Building branch: ${env.BRANCH_NAME}" }
     }
+  }
 }
