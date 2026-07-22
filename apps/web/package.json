@@ -6,7 +6,8 @@
     "dev": "next dev -p 3006",
     "build": "next build",
     "start": "next start -p 3006",
-    "lint": "echo \"(lint skipped)\""
+    "lint": "echo \"(lint skipped)\"",
+    "test": "jest --coverage"
   },
   "dependencies": {
     "@emotion/react": "^11.14.0",
@@ -37,6 +38,9 @@
     "@types/node": "^22.10.0",
     "@types/react": "^19.2.17",
     "@types/react-dom": "^19.2.3",
+    "@types/jest": "^30.0.0",
+    "jest": "^30.0.0",
+    "ts-jest": "^29.4.0",
     "typescript": "^5.9.2"
   }
 }
