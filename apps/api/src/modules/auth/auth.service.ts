@@ -27,13 +27,13 @@ export class AuthService {
       form.email,
       form.username,
     );
-    // if (existing) {
-    //   throw new ConflictException(
-    //     existing.email === form.email
-    //       ? 'อีเมลนี้ถูกใช้แล้ว'
-    //       : 'username นี้ถูกใช้แล้ว',
-    //   );
-    // }
+    if (existing) {
+      throw new ConflictException(
+        existing.email === form.email
+          ? 'อีเมลนี้ถูกใช้แล้ว'
+          : 'username นี้ถูกใช้แล้ว',
+      );
+    }
 
     const password = await bcrypt.hash(form.password, 10);
     const user = await this.users.create({
