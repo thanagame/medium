@@ -1,2 +1,11 @@
-FROM kong:3.6
-COPY infra/kong/kong.dev.yml /kong/kong.yml
+# build context = repo root
+FROM kong:3.9
+
+# DB-less (declarative) — ให้ Kong อ่าน route/plugin จากไฟล์ ไม่ต้องใช้ Postgres
+ENV KONG_DATABASE=off
+ENV KONG_DECLARATIVE_CONFIG=/kong/kong.yml
+
+# เลือกไฟล์ config ตอน build (default = prod-style: api เป็น service ใน docker network เดียวกัน)
+# dev/staging override ได้:  docker build --build-arg KONG_CONFIG=infra/kong/kong.dev.yml ...
+ARG KONG_CONFIG=infra/kong/kong.prod.yml
+COPY ${KONG_CONFIG} /kong/kong.yml
