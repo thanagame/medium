@@ -16,7 +16,7 @@ services:
   kong:
     build:
       context: .
-      dockerfile: infra/docker/Dockerfile.kong
+      dockerfile: infra/kong/Dockerfile.kong
     environment:
       KONG_DATABASE: "off"
       KONG_DECLARATIVE_CONFIG: /kong/kong.yml
