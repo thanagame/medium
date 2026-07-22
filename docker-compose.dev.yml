@@ -10,7 +10,9 @@ services:
   web:
     image: medium-web:${IMAGE_TAG}
     environment:
-      NEXT_PUBLIC_API_URL: http://localhost:8000
+      NEXT_PUBLIC_API_URL: http://localhost:8000/api
+    ports:
+      - "3006:3006"
     networks: [medium-dev]
 
   kong:
@@ -21,7 +23,6 @@ services:
         KONG_CONFIG: infra/kong/kong.local.yml
     ports:
       - "8000:8000"
-      - "3006:3006"
     depends_on: [api, web]
     networks: [medium-dev]
 
