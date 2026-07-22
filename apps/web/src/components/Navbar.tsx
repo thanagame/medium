@@ -71,7 +71,7 @@ export default function Navbar() {
               flexShrink: 0,
             }}
           >
-            Storyline
+            Storyline 1234
           </Typography>
 
           <Box
