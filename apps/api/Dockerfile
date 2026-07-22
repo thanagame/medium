@@ -17,6 +17,9 @@ RUN pnpm install
 COPY packages/shared packages/shared
 COPY apps/api apps/api
 
+ARG DATABASE_URL="postgresql://ci:ci@localhost:5432/ci?schema=public"
+ENV DATABASE_URL=${DATABASE_URL}
+
 RUN pnpm --filter @repo/shared build \
   && pnpm --filter @repo/api exec prisma generate \
   && pnpm --filter @repo/api build

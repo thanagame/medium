@@ -35,7 +35,7 @@ pipeline {
       }
     }
 
-    stage('Quality') {                 // lint + test พร้อมกัน (Part 7)
+    stage('Sonar Scan') {                 // lint + test พร้อมกัน (Part 7)
       parallel {
         stage('Lint') {
           steps {
@@ -96,7 +96,12 @@ pipeline {
       }
       steps {
         // Agent มี docker CLI ติดตั้งไว้แล้วจาก Part 4 — ไม่ต้องลงเพิ่มสดๆ ตอนนี้
-        sh "docker build -f apps/api/Dockerfile -t medium-api:${env.BRANCH_NAME}-${env.BUILD_NUMBER} ."
+      sh """
+  docker build \
+    --build-arg DATABASE_URL='${env.DATABASE_URL}' \
+    -f apps/api/Dockerfile \
+    -t medium-api:${env.BRANCH_NAME}-${env.BUILD_NUMBER} .
+"""
         sh "docker build -f apps/web/Dockerfile -t medium-web:${env.BRANCH_NAME}-${env.BUILD_NUMBER} ."
       }
     }
@@ -104,20 +109,30 @@ pipeline {
     // ===== Deploy แยกตาม branch =====
     // NOTE: บนเครื่องเดียว deploy หลาย env พร้อมกัน port ชนกัน (8000/3006)
     //       ตอนเรียนให้ deploy ทีละ env
-    stage('Deploy DEV') {
+stage('Deploy DEV') {
       when { branch 'develop' }
-      steps { echo 'Deploy -> DEV' /* docker compose -p medium-dev ... */ }
+      steps {
+        echo "Deploy on dev..."
+      }
     }
-    stage('Deploy STAGING') {
-      when { branch 'staging' }
-      steps { echo 'Deploy -> STAGING' }
-    }
+
     stage('Deploy PROD') {
       when { branch 'main' }
       steps {
-        input message: 'อนุมัติให้ Deploy ขึ้น Production?'   // Manual Approval
-        echo 'Deploy -> PROD'
-        // inject POSTGRES_PASSWORD / JWT_SECRET จาก Credentials ก่อน (withCredentials)
+        echo "Deploy on PROD..."
+      }
+    }
+stage('Deploy STAGING') {
+      when { branch 'staging' }
+      steps {
+        echo "Deploy on STAGING..."
+      }
+    }
+
+    stage('Deploy PROD') {
+      when { branch 'main' }
+      steps {
+        echo "Deploy on PROD..."
       }
     }
   }
