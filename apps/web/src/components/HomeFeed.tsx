@@ -107,7 +107,7 @@ export default function HomeFeed() {
         >
           <Box sx={{ position: 'sticky', top: 88 }}>
             <Typography variant="subtitle1" sx={{ mb: 2, fontWeight: 700 }}>
-              หัวข้อยอดนิยม
+              หัวข้อยอดนิยมสุดๆ
             </Typography>
             <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
               {tagsQuery.data?.map((t) => (
