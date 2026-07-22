@@ -1,4 +1,4 @@
-import { z } from 'zod';
+import { z } from "zod";
 
 /* ------------------------------------------------------------------ *
  * Domain DTOs (shared contract between web and api)
@@ -79,46 +79,45 @@ export interface ProfileDto {
  * ------------------------------------------------------------------ */
 
 export const registerSchema = z.object({
-  email: z.string().email('อีเมลไม่ถูกต้อง'),
+  email: z.email("อีเมลไม่ถูกต้อง"),
   username: z
     .string()
-    .min(3, 'อย่างน้อย 3 ตัวอักษร')
-    .max(30, 'ไม่เกิน 30 ตัวอักษร')
-    .regex(/^[a-zA-Z0-9_]+$/, 'ใช้ได้เฉพาะ a-z, 0-9 และ _'),
-  name: z.string().min(1, 'กรุณากรอกชื่อ').max(80),
-  password: z.string().min(6, 'อย่างน้อย 6 ตัวอักษร').max(100),
+    .min(3, "อย่างน้อย 3 ตัวอักษร")
+    .max(30, "ไม่เกิน 30 ตัวอักษร")
+    .regex(/^\w+$/, "ใช้ได้เฉพาะ a-z, 0-9 และ _"),
+  name: z.string().min(1, "กรุณากรอกชื่อ").max(80),
+  password: z.string().min(6, "อย่างน้อย 6 ตัวอักษร").max(100),
 });
 export type RegisterInput = z.infer<typeof registerSchema>;
 
 export const loginSchema = z.object({
-  email: z.string().email('อีเมลไม่ถูกต้อง'),
-  password: z.string().min(1, 'กรุณากรอกรหัสผ่าน'),
+  email: z.email("อีเมลไม่ถูกต้อง"),
+  password: z.string().min(1, "กรุณากรอกรหัสผ่าน"),
 });
 export type LoginInput = z.infer<typeof loginSchema>;
 
 const optionalUrl = z
-  .string()
-  .url('ต้องเป็น URL ที่ถูกต้อง')
+  .url("ต้องเป็น URL ที่ถูกต้อง")
   .optional()
-  .or(z.literal(''));
+  .or(z.literal(""));
 
 export const articleInputSchema = z.object({
-  title: z.string().min(1, 'กรุณากรอกหัวข้อ').max(200),
-  subtitle: z.string().max(300).optional().or(z.literal('')),
-  content: z.string().min(1, 'เนื้อหาว่างเปล่า'),
+  title: z.string().min(1, "กรุณากรอกหัวข้อ").max(200),
+  subtitle: z.string().max(300).optional().or(z.literal("")),
+  content: z.string().min(1, "เนื้อหาว่างเปล่า"),
   coverImageUrl: optionalUrl,
   tags: z.array(z.string().min(1).max(30)).max(5).optional(),
 });
 export type ArticleInput = z.infer<typeof articleInputSchema>;
 
 export const commentInputSchema = z.object({
-  body: z.string().min(1, 'พิมพ์คอมเมนต์ก่อน').max(2000),
+  body: z.string().min(1, "พิมพ์คอมเมนต์ก่อน").max(2000),
 });
 export type CommentInput = z.infer<typeof commentInputSchema>;
 
 export const profileUpdateSchema = z.object({
   name: z.string().min(1).max(80).optional(),
-  bio: z.string().max(300).optional().or(z.literal('')),
+  bio: z.string().max(300).optional().or(z.literal("")),
   avatarUrl: optionalUrl,
 });
 export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
@@ -127,7 +126,7 @@ export type ProfileUpdateInput = z.infer<typeof profileUpdateSchema>;
  * Query helpers
  * ------------------------------------------------------------------ */
 
-export type ArticleSort = 'latest' | 'popular';
+export type ArticleSort = "latest" | "popular";
 
 export interface ArticleFeedQuery {
   page?: number;
