@@ -1,0 +1,2 @@
+FROM kong:3.6
+COPY infra/kong/kong.dev.yml /kong/kong.yml

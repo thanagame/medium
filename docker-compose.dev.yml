@@ -13,19 +13,19 @@ services:
       NEXT_PUBLIC_API_URL: http://localhost:8000   # URL ที่ฝั่ง Client เรียกกลับมาหา API ผ่าน Kong
     networks: [medium-dev]
 
-  kong:
-    image: kong:3.6                # Reverse Proxy หน้าสุด รวม Route ของ api/web ไว้ที่เดียว
-    environment:
-      KONG_DATABASE: "off"         # ใช้โหมด DB-less อ่าน Config จากไฟล์ ไม่ต้องมี Database แยกสำหรับ Kong เอง
-      KONG_DECLARATIVE_CONFIG: /kong/kong.yml
-    volumes:
-      - ./infra/kong/kong.dev.yml:/kong/kong.yml
-    ports:
-      - "8000:8000"   # Endpoint หลักสำหรับเรียก API ผ่าน Kong
-      - "3006:3006"   # Endpoint สำหรับเปิดหน้าเว็บ
-    depends_on: [api, web]
-    networks: [medium-dev]
-
+kong:
+  build:
+    context: .
+    dockerfile: infra/docker/Dockerfile.kong
+  environment:
+    KONG_DATABASE: "off"
+    KONG_DECLARATIVE_CONFIG: /kong/kong.yml
+  ports:
+    - "8000:8000"
+    - "3006:3006"
+  depends_on: [api, web]
+  networks: [medium-dev]
+  
   postgres:
     image: postgres:16
     environment:
