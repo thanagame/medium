@@ -88,16 +88,17 @@ pipeline {
     }
 
     // ===== Deploy: แยกตาม Branch ที่ Trigger =====
-    stage('Deploy DEV') {
-      when { branch 'develop' }
-      steps {
-        sh """
-          export TAG=${env.BRANCH_NAME}-${env.BUILD_NUMBER}
-          docker compose -p medium-dev -f docker-compose.dev.yml pull || true
-          IMAGE_TAG=\$TAG docker compose -p medium-dev -f docker-compose.dev.yml up -d --remove-orphans
-        """
-      }
-    }
+stage('Deploy DEV') {
+  when { branch 'develop' }
+  steps {
+    sh """
+      export TAG=${env.BRANCH_NAME}-${env.BUILD_NUMBER}
+      IMAGE_TAG=\$TAG docker compose -p medium-dev -f docker-compose.dev.yml build kong
+      IMAGE_TAG=\$TAG docker compose -p medium-dev -f docker-compose.dev.yml pull api web || true
+      IMAGE_TAG=\$TAG docker compose -p medium-dev -f docker-compose.dev.yml up -d --remove-orphans
+    """
+  }
+}
     stage('Deploy STAGING') {
       when { branch 'staging' }
       steps {
