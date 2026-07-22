@@ -35,7 +35,7 @@ pipeline {
       }
     }
 
-    stage('Sonar Scan') {                 // lint + test พร้อมกัน (Part 7)
+    stage('typechec & test') {                 // lint + test พร้อมกัน (Part 7)
       parallel {
         stage('Lint') {
           steps {
