@@ -1,0 +1,46 @@
+services:
+  api:
+    image: medium-api:${IMAGE_TAG}   # Tag ถูกกำหนดจาก Jenkinsfile ตอนรัน docker compose up (ตรงกับ Image ที่เพิ่ง Build)
+    environment:
+      DATABASE_URL: postgresql://postgres:postgres@postgres:5432/medium
+      REDIS_URL: redis://redis:6379
+    depends_on: [postgres, redis]   # รอให้ DB/Redis พร้อมก่อนค่อย Start API
+    networks: [medium-dev]
+
+  web:
+    image: medium-web:${IMAGE_TAG}
+    environment:
+      NEXT_PUBLIC_API_URL: http://localhost:8000   # URL ที่ฝั่ง Client เรียกกลับมาหา API ผ่าน Kong
+    networks: [medium-dev]
+
+  kong:
+    image: kong:3.6                # Reverse Proxy หน้าสุด รวม Route ของ api/web ไว้ที่เดียว
+    environment:
+      KONG_DATABASE: "off"         # ใช้โหมด DB-less อ่าน Config จากไฟล์ ไม่ต้องมี Database แยกสำหรับ Kong เอง
+      KONG_DECLARATIVE_CONFIG: /kong/kong.yml
+    volumes:
+      - ./infra/kong/kong.dev.yml:/kong/kong.yml
+    ports:
+      - "8000:8000"   # Endpoint หลักสำหรับเรียก API ผ่าน Kong
+      - "3006:3006"   # Endpoint สำหรับเปิดหน้าเว็บ
+    depends_on: [api, web]
+    networks: [medium-dev]
+
+  postgres:
+    image: postgres:16
+    environment:
+      POSTGRES_PASSWORD: postgres   # Dev ใช้รหัสง่ายๆ ได้ ส่วน Prod ต้องดึงจาก Credential (ดู docker-compose.prod.yml)
+      POSTGRES_DB: medium
+    volumes:
+      - medium_dev_pg:/var/lib/postgresql/data   # เก็บข้อมูลถาวรแม้ Container จะถูกลบ/สร้างใหม่
+    networks: [medium-dev]
+
+  redis:
+    image: redis:7
+    networks: [medium-dev]
+
+networks:
+  medium-dev:   # แยก Network เฉพาะของ Environment นี้ ไม่ปนกับ staging/prod
+
+volumes:
+  medium_dev_pg:
