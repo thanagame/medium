@@ -13,17 +13,17 @@ services:
       NEXT_PUBLIC_API_URL: http://localhost:8000
     networks: [medium-dev]
 
-kong:
-  build:
-    context: .
-    dockerfile: infra/docker/Dockerfile.kong
-    args:
-      KONG_CONFIG: infra/kong/kong.local.yml 
-  ports:
-    - "8000:8000"
-    - "3006:3006"
-  depends_on: [api, web]
-  networks: [medium-dev]
+  kong:
+    build:
+      context: .
+      dockerfile: infra/kong/Dockerfile.kong
+      args:
+        KONG_CONFIG: infra/kong/kong.local.yml
+    ports:
+      - "8000:8000"
+      - "3006:3006"
+    depends_on: [api, web]
+    networks: [medium-dev]
 
   postgres:
     image: postgres:16
