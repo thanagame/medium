@@ -129,12 +129,7 @@ stage('Deploy STAGING') {
       }
     }
 
-    stage('Deploy PROD') {
-      when { branch 'main' }
-      steps {
-        echo "Deploy on PROD..."
-      }
-    }
+
   }
 
   post {
