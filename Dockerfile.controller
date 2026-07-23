@@ -1,0 +1,24 @@
+# ใช้ Jenkins Image ทางการเป็นฐาน (มีแค่ Java + Jenkins ไม่มี Docker CLI ติดมา)
+FROM jenkins/jenkins:lts
+
+# สลับเป็น root ชั่วคราวเพื่อติดตั้ง Package เพิ่ม (ปกติ Jenkins Image รันด้วย user "jenkins")
+USER root
+
+# ติดตั้ง Dependency พื้นฐานที่ต้องใช้ก่อนเพิ่ม Docker APT Repository
+RUN apt-get update && apt-get install -y \
+    curl ca-certificates gnupg lsb-release \
+    && rm -rf /var/lib/apt/lists/*
+
+# เพิ่ม Docker APT Repository อย่างเป็นทางการ แล้วติดตั้งแค่ "Docker CLI" เท่านั้น
+# (ไม่ใช่ Docker Engine เต็มตัว) เพราะ Controller แค่ต้องส่งคำสั่งผ่าน docker.sock ไปหา Engine บน Host
+RUN curl -fsSL https://download.docker.com/linux/debian/gpg | gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg && \
+    echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/debian $(lsb_release -cs) stable" > /etc/apt/sources.list.d/docker.list && \
+    apt-get update && apt-get install -y docker-ce-cli && \
+    rm -rf /var/lib/apt/lists/*
+
+# สร้าง group "docker" (ถ้ายังไม่มี) แล้วเพิ่ม user jenkins เข้ากลุ่มนี้
+# เพื่อให้ jenkins user มีสิทธิ์เขียนเข้า docker.sock ที่ Mount มาจาก Host ได้
+RUN groupadd -f docker && usermod -aG docker jenkins
+
+# กลับมาใช้ user "jenkins" ตามปกติ (ไม่รัน Container ด้วย root ถ้าไม่จำเป็น)
+USER jenkins
