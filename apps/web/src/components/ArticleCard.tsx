@@ -65,7 +65,7 @@ export default function ArticleCard({
                 overflow: 'hidden',
               }}
             >
-              {article.subtitle || article.excerpt}
+              {article.subtitle || article.excerpt} eieiei
             </Typography>
           </Box>
 
